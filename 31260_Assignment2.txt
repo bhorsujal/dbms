@@ -1,0 +1,397 @@
+[TE@fedora ~]$ mysql -h 10.10.14.184 -u te31260 -p
+Enter password:
+Welcome to the MariaDB monitor.  Commands end with ; or \g.
+Your MariaDB connection id is 260
+Server version: 10.4.19-MariaDB MariaDB Server
+
+Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+MariaDB [(none)]> use te31260_db;
+Reading table information for completion of table and column names
+You can turn off this feature to get a quicker startup with -A
+
+Database changed
+MariaDB [te31260_db]> show tables;
++----------------------+
+| Tables_in_te31260_db |
++----------------------+
+| Dept             	|
+| Employee         	|
+| Project          	|
++----------------------+
+3 rows in set (0.001 sec)
+
+MariaDB [te31260_db]> create table Dept(Dept_id integer,Dept_name varchar(10),Dept_location varchar(10),primary key(Dept_id));
+Query OK, 0 rows affected (0.155 sec)
+
+MariaDB [te31260_db]> create table Employee(Emp_id integer,Dept_id integer,Emp_fname varchar(10),Emp_lname varchar(10),Emp_Position varchar(10),Emp_salary integer,Emp_JoinDate varchar(10),primary key(Emp_id),foreign key(Dept_id) references Dept (Dept_id) on delete cascade);
+Query OK, 0 rows affected (0.190 sec)
+
+MariaDB [te31260_db]> create table Project(Proj_id integer,Dept_id integer,Proj_name varchar(20),Proj_location varchar(10),Proj_cost integer,Proj_year integer,primary key(Proj_id),foreign key(Dept_id) references Dept(Dept_id) on delete cascade);
+Query OK, 0 rows affected (0.166 sec)
+
+
+
+
+
+
+MariaDB [te31260_db]> desc Dept;
++---------------+-------------+------+-----+---------+-------+
+| Field     	| Type    	| Null | Key | Default | Extra |
++---------------+-------------+------+-----+---------+-------+
+| Dept_id   	| int(11) 	| NO   | PRI | NULL	|   	|
+| Dept_name 	| varchar(10) | YES  | 	| NULL	|   	|
+| Dept_location | varchar(10) | YES  | 	| NULL	|   	|
++---------------+-------------+------+-----+---------+-------+
+3 rows in set (0.058 sec)
+
+MariaDB [te31260_db]> desc Employee;
++--------------+-------------+------+-----+---------+-------+
+| Field    	| Type    	| Null | Key | Default | Extra |
++--------------+-------------+------+-----+---------+-------+
+| Emp_id   	| int(11) 	| NO   | PRI | NULL	|   	|
+| Dept_id  	| int(11) 	| YES  | MUL | NULL	|   	|
+| Emp_fname	| varchar(10) | YES  | 	| NULL	|   	|
+| Emp_lname	| varchar(10) | YES  | 	| NULL	|   	|
+| Emp_Position | varchar(10) | YES  | 	| NULL	|   	|
+| Emp_salary   | int(11) 	| YES  | 	| NULL	|   	|
+| Emp_JoinDate | varchar(10) | YES  | 	| NULL	|   	|
++--------------+-------------+------+-----+---------+-------+
+7 rows in set (0.003 sec)
+
+MariaDB [te31260_db]> desc Project;
++---------------+-------------+------+-----+---------+-------+
+| Field     	| Type    	| Null | Key | Default | Extra |
++---------------+-------------+------+-----+---------+-------+
+| Proj_id   	| int(11) 	| NO   | PRI | NULL	|   	|
+| Dept_id   	| int(11) 	| YES  | MUL | NULL	|   	|
+| Proj_name 	| varchar(20) | YES  | 	| NULL	|   	|
+| Proj_location | varchar(10) | YES  | 	| NULL	|   	|
+| Proj_cost 	| int(11) 	| YES  | 	| NULL	|   	|
+| Proj_year 	| int(11) 	| YES  | 	| NULL	|   	|
++---------------+-------------+------+-----+---------+-------+
+6 rows in set (0.003 sec)
+
+Query 1: Insert at least 10 records in the Employee Table and insert in other tables accordingly.
+
+MariaDB [te31260_db]> insert into Dept values(1011,'Computer','Pune');
+Query OK, 1 row affected (0.033 sec)
+
+MariaDB [te31260_db]> insert into Dept values(1012,'IT','Mumbai');
+Query OK, 1 row affected (0.037 sec)
+
+
+MariaDB [te31260_db]> insert into Dept values(1013,'ECE','Banglore');
+Query OK, 1 row affected (0.032 sec)
+                                                                
+MariaDB [te31260_db]> select * from Dept;
++---------+-----------+---------------+
+| Dept_id | Dept_name | Dept_location |
++---------+-----------+---------------+
+|	1011 | Computer  | Pune      	|
+|	1012 | IT    	| Mumbai    	|
+|	1013 | ECE   	| Banglore  	|
++---------+-----------+---------------+
+3 rows in set (0.001 sec)
+
+MariaDB [te31260_db]> alter table Employee modify Emp_JoinDate integer;
+Query OK, 0 rows affected (0.498 sec)         	 
+Records: 0  Duplicates: 0  Warnings: 0
+
+MariaDB [te31260_db]> insert into Employee values(101,1011,'Gayatri','Pillai','GM',10000,2000);
+Query OK, 1 row affected (0.031 sec)
+
+MariaDB [te31260_db]> insert into Employee values(102,1011,'Hans','Mittal','VP',100000,1980);
+Query OK, 1 row affected (0.041 sec)
+
+MariaDB [te31260_db]> insert into Employee values(103,1012,'Sakshi','Marbahl','GM',10000,2002);
+Query OK, 1 row affected (0.030 sec)
+
+MariaDB [te31260_db]> insert into Employee values(104,1012,'Parth','Joshi','VP',200000,1984);
+Query OK, 1 row affected (0.030 sec)
+
+MariaDB [te31260_db]> insert into Employee values(105,1013,'Keshini','Jain','GM',10000,1986);
+Query OK, 1 row affected (0.037 sec)
+
+MariaDB [te31260_db]> insert into Employee values(106,1013,'Prajwal','Padole','GM',10000,1980);
+Query OK, 1 row affected (0.037 sec)
+
+MariaDB [te31260_db]> insert into Employee values(107,1011,'Sharon','Grace','Analyst',10000,2000);
+Query OK, 1 row affected (0.031 sec)
+
+MariaDB [te31260_db]> insert into Employee values(108,1011,'Soumya','Aachari','Engineer',1000,2004);
+Query OK, 1 row affected (0.025 sec)
+
+MariaDB [te31260_db]> insert into Employee values(109,1012,'Mihika','Joshi','Engineer',1000,2005);
+Query OK, 1 row affected (0.030 sec)
+
+MariaDB [te31260_db]> insert into Employee values(110,1013,'Shreeya','Kalbhor','Engineer',1000,2005);
+Query OK, 1 row affected (0.025 sec)
+
+MariaDB [te31260_db]> select * from Employee;
++--------+---------+-----------+-----------+--------------+------------+--------------+
+| Emp_id | Dept_id | Emp_fname | Emp_lname | Emp_Position | Emp_salary | Emp_JoinDate |
++--------+---------+-----------+-----------+--------------+------------+--------------+
+|	101 |	1011 | Gayatri   | Pillai	| GM       	|  	10000 |     	2000 |
+|	102 |	1011 | Hans  	| Mittal	| VP       	| 	100000 |     	1980 |
+|	103 |	1012 | Sakshi	| Marbahl   | GM       	|  	10000 |     	2002 |
+|	104 |	1012 | Parth 	| Joshi 	| VP       	| 	200000 |     	1984 |
+|	105 |	1013 | Keshini   | Jain  	| GM       	|  	10000 |     	1986 |
+|	106 |	1013 | Prajwal   | Padole	| GM       	|  	10000 |     	1980 |
+|	107 |	1011 | Sharon	| Grace 	| Analyst  	|  	10000 |     	2000 |
+|	108 |	1011 | Soumya	| Aachari   | Engineer 	|   	1000 |     	2004 |
+|	109 |	1012 | Mihika	| Joshi 	| Engineer 	|   	1000 |     	2005 |
+|	110 |	1013 | Shreeya   | Kalbhor   | Engineer 	|   	1000 |     	2005 |
++--------+---------+-----------+-----------+--------------+------------+--------------+
+10 rows in set (0.001 sec)
+
+MariaDB [te31260_db]> insert into Project values(1,1011,'Analytics','Pune',200000,2004);
+Query OK, 1 row affected (0.035 sec)
+
+MariaDB [te31260_db]> insert into Project values(2,1012,'Landmark Detection','Mumbai',300000,2005);
+Query OK, 1 row affected (0.033 sec)
+
+MariaDB [te31260_db]> insert into Project values(3,1011,'Chatbot','Banglore',600000,2006);
+Query OK, 1 row affected (0.027 sec)
+
+MariaDB [te31260_db]> insert into Project values(4,1013,'GenAI','Pune',500000,2007);
+Query OK, 1 row affected (0.075 sec)
+
+MariaDB [te31260_db]> insert into Project values(5,1012,'Anomaly Detection','Mumbai',300000,2003);
+Query OK, 1 row affected (0.111 sec)
+
+MariaDB [te31260_db]> insert into Project values(6,1013,'Disease Prediction','Banglore',500000,2004);
+Query OK, 1 row affected (0.025 sec)
+                                                          
+MariaDB [te31260_db]> select * from Project;
++---------+---------+--------------------+---------------+-----------+-----------+
+| Proj_id | Dept_id | Proj_name      	| Proj_location | Proj_cost | Proj_year |
++---------+---------+--------------------+---------------+-----------+-----------+
+|   	1 |	1011 | Analytics      	| Pune      	|	200000 |  	2004 |
+|   	2 |	1012 | Landmark Detection | Mumbai    	|	300000 |  	2005 |
+|   	3 |	1011 | Chatbot        	| Banglore  	|	600000 |  	2006 |
+|   	4 |	1013 | GenAI          	| Pune      	|	500000 |  	2007 |
+|   	5 |	1012 | Anomaly Detection  | Mumbai    	|	300000 |  	2003 |
+|   	6 |	1013 | Disease Prediction | Banglore  	|	500000 |  	2004 |
++---------+---------+--------------------+---------------+-----------+-----------+
+6 rows in set (0.001 sec)
+
+Query 2: Display all Employee details with Department 'Computer' and 'IT' and Employee
+first name starting with 'p' or 'h'.
+
+MariaDB [te31260_db]> SELECT Employee.* from Employee join Dept on Employee.Dept_id = Dept.Dept_id where
+(Dept.Dept_name = 'Computer' or Dept.Dept_name = 'IT') and (Employee.Emp_fname like 'p%' or Employee.Emp_fname like 'h%');
++--------+---------+-----------+-----------+--------------+------------+--------------+
+| Emp_id | Dept_id | Emp_fname | Emp_lname | Emp_Position | Emp_salary | Emp_JoinDate |
++--------+---------+-----------+-----------+--------------+------------+--------------+
+|	102 |	1011 | Hans  	| Mittal	| VP       	| 	100000 |     	1980 |
+|	104 |	1012 | Parth 	| Joshi 	| VP       	| 	200000 |     	1984 |
++--------+---------+-----------+-----------+--------------+------------+--------------+
+2 rows in set (0.001 sec)
+
+Query 3: List the number of different Employee Positions.
+
+MariaDB [te31260_db]> select distinct Emp_Position from Employee;
++--------------+
+| Emp_Position |
++--------------+
+| GM       	|
+| VP       	|
+| Analyst  	|
+| Engineer 	|
++--------------+
+4 rows in set (0.001 sec)
+
+Query 4: Give 10% increase in Salary of the Employee whose joining year is before 1985.
+
+MariaDB [te31260_db]> update Employee set Emp_salary = Emp_salary*1.1 where Emp_JoinDate <1985;
+Query OK, 3 rows affected (0.081 sec)
+Rows matched: 3  Changed: 3  Warnings: 0
+
+MariaDB [te31260_db]> select * from Employee;
++--------+---------+-----------+-----------+--------------+------------+--------------+
+| Emp_id | Dept_id | Emp_fname | Emp_lname | Emp_Position | Emp_salary | Emp_JoinDate |
++--------+---------+-----------+-----------+--------------+------------+--------------+
+|	101 |	1011 | Gayatri   | Pillai	| GM       	|  	10000 |     	2000 |
+|	102 |	1011 | Hans  	| Mittal	| VP       	| 	110000 |     	1980 |
+|	103 |	1012 | Sakshi	| Marbahl   | GM       	|  	10000 |     	2002 |
+|	104 |	1012 | Parth 	| Joshi 	| VP       	| 	220000 |     	1984 |
+|	105 |	1013 | Keshini   | Jain  	| GM       	|  	10000 |     	1986 |
+|	106 |	1013 | Prajwal   | Padole	| GM       	|  	11000 |     	1980 |
+|	107 |	1011 | Sharon	| Grace 	| Analyst  	|  	10000 |     	2000 |
+|	108 |	1011 | Soumya	| Aachari   | Engineer 	|   	1000 |     	2004 |
+|	109 |	1012 | Mihika	| Joshi 	| Engineer 	|   	1000 |     	2005 |
+|	110 |	1013 | Shreeya   | Kalbhor   | Engineer 	|   	1000 |     	2005 |
++--------+---------+-----------+-----------+--------------+------------+--------------+
+10 rows in set (0.001 sec)
+
+Query 5: Delete Department details which location is 'Mumbai'.
+
+MariaDB [te31260_db]> delete from Dept where Dept_location = 'Mumbai';
+Query OK, 1 row affected (0.036 sec)
+
+MariaDB [te31260_db]> select * from Dept;
++---------+-----------+---------------+
+| Dept_id | Dept_name | Dept_location |
++---------+-----------+---------------+
+|	1011 | Computer  | Pune      	|
+|	1013 | ECE   	| Banglore  	|
++---------+-----------+---------------+
+2 rows in set (0.001 sec)
+
+
+
+
+
+
+
+Query 6: Find the names of Projects with location 'pune' .
+
+MariaDB [te31260_db]> select * from Project where Proj_location = 'Pune';
++---------+---------+-----------+---------------+-----------+-----------+
+| Proj_id | Dept_id | Proj_name | Proj_location | Proj_cost | Proj_year |
++---------+---------+-----------+---------------+-----------+-----------+
+|   	1 |	1011 | Analytics | Pune      	|	200000 |  	2004 |
+|   	4 |	1013 | GenAI 	| Pune      	|	500000 |  	2007 |
++---------+---------+-----------+---------------+-----------+-----------+
+2 rows in set (0.001 sec)
+                                                                                                       
+
+Query 7: Find the project having cost in between 100000 to 500000.
+
+MariaDB [te31260_db]> select * from Project where Proj_cost between 100000 and 500000;
++---------+---------+--------------------+---------------+-----------+-----------+
+| Proj_id | Dept_id | Proj_name      	| Proj_location | Proj_cost | Proj_year |
++---------+---------+--------------------+---------------+-----------+-----------+
+|   	1 |	1011 | Analytics      	| Pune      	|	200000 |  	2004 |
+|   	4 |	1013 | GenAI          	| Pune      	|	500000 |  	2007 |
+|   	6 |	1013 | Disease Prediction | Banglore  	|	500000 |  	2004 |
++---------+---------+--------------------+---------------+-----------+-----------+
+Query 8: Find the project having maximum price and find average of Project cost.
+
+MariaDB [te31260_db]> select all * from Project where Proj_cost = (select max(Proj_cost) from Project);
++---------+---------+-----------+---------------+-----------+-----------+
+| Proj_id | Dept_id | Proj_name | Proj_location | Proj_cost | Proj_year |
++---------+---------+-----------+---------------+-----------+-----------+
+|   	3 |	1011 | Chatbot   | Banglore  	|	600000 |  	2006 |
++---------+---------+-----------+---------------+-----------+-----------+
+1 row in set (0.001 sec)
+
+MariaDB [te31260_db]> select avg(Proj_cost) from Project;
++----------------+
+| avg(Proj_cost) |
++----------------+
+|	450000.0000 |
++----------------+
+1 row in set (0.001 sec)
+
+Query 9: Display all employees with Emp _id and Emp name in decreasing order of
+Emp_lname.
+
+MariaDB [te31260_db]> select Emp_id ,Emp_fname, Emp_lname from Employee order by Emp_lname desc;
++--------+-----------+-----------+
+| Emp_id | Emp_fname | Emp_lname |
++--------+-----------+-----------+
+|	101 | Gayatri   | Pillai	|
+|	106 | Prajwal   | Padole	|
+|	102 | Hans  	| Mittal	|
+|	110 | Shreeya   | Kalbhor   |
+|	105 | Keshini   | Jain  	|
+|	107 | Sharon	| Grace 	|
+|	108 | Soumya	| Aachari   |
++--------+-----------+-----------+
+7 rows in set (0.001 sec)
+
+Query 10: Display Proj_name,Proj_location ,Proj_cost of all project started in 2004,2005,2007.
+
+MariaDB [te31260_db]> select Proj_name,Proj_location,Proj_cost from Project where Proj_year = 2004 or Proj_year = 2005 or Proj_year = 2007;
+
++--------------------+---------------+-----------+
+| Proj_name      	| Proj_location | Proj_cost |
++--------------------+---------------+-----------+
+| Analytics      	| Pune      	|	200000 |
+| GenAI          	| Pune      	|	500000 |
+| Disease Prediction | Banglore  	|	500000 |
++--------------------+---------------+-----------+
+3 rows in set (0.001 sec)
+
+Create View: 
+MariaDB [te31260_db]> create or replace view empview as select Emp_fname,Emp_lname,Emp_position from Employee where Emp_position = 'GM';
+Query OK, 0 rows affected (0.030 sec)
+
+MariaDB [te31260_db]> show tables;
++----------------------+
+| Tables_in_te31260_db |
++----------------------+
+| Dept             	|
+| Employee         	|
+| Project          	|
+| empview          	|
++----------------------+
+4 rows in set (0.001 sec)
+
+MariaDB [te31260_db]> select * from empview;
++-----------+-----------+--------------+
+| Emp_fname | Emp_lname | Emp_position |
++-----------+-----------+--------------+
+| Gayatri   | Pillai	| GM       	|
+| Keshini   | Jain  	| GM       	|
+| Prajwal   | Padole	| GM       	|
++-----------+-----------+--------------+
+3 rows in set (0.001 sec)
+
+MariaDB [te31260_db]> create or replace view Emp_view as select Emp_id,Emp_fname,Emp_lname,Emp_position from Employee;
+Query OK, 0 rows affected (0.033 sec)
+
+MariaDB [te31260_db]> select * from Emp_view;
++--------+-----------+-----------+--------------+
+| Emp_id | Emp_fname | Emp_lname | Emp_position |
++--------+-----------+-----------+--------------+
+|	101 | Gayatri   | Pillai	| GM       	|
+|	102 | Hans  	| Mittal	| VP       	|
+|	105 | Keshini   | Jain  	| GM       	|
+|	106 | Prajwal   | Padole	| GM       	|
+|	107 | Sharon	| Grace 	| Analyst  	|
+|	108 | Soumya	| Aachari   | Engineer 	|
+|	110 | Shreeya   | Kalbhor   | Engineer 	|
++--------+-----------+-----------+--------------+
+7 rows in set (0.001 sec)
+
+Create Index:
+MariaDB [te31260_db]> create index EMPindx on Employee(Emp_position);
+Query OK, 0 rows affected (0.221 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+MariaDB [te31260_db]> create index emp_idx on Employee(Emp_fname,Emp_position);
+Query OK, 0 rows affected (0.156 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+MariaDB [te31260_db]> create unique index EMP_IDX1 on Employee(Emp_id);
+Query OK, 0 rows affected (0.168 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+
+
+
+MariaDB [te31260_db]> show index from Employee;
++----------+------------+----------+--------------+--------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
+| Table	| Non_unique | Key_name | Seq_in_index | Column_name  | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment | Index_comment |
++----------+------------+----------+--------------+--------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
+| Employee |      	0 | PRIMARY  |        	1 | Emp_id   	| A     	|       	7 | 	NULL | NULL   |  	| BTREE  	|     	|           	|
+| Employee |      	0 | EMP_IDX1 |        	1 | Emp_id   	| A     	|       	7 | 	NULL | NULL   |  	| BTREE  	|     	|           	|
+| Employee |      	1 | Dept_id  |        	1 | Dept_id  	| A     	|       	7 | 	NULL | NULL   | YES  | BTREE  	|     	|           	|
+| Employee |      	1 | emp_idx  |        	1 | Emp_fname	| A     	|       	7 | 	NULL | NULL   | YES  | BTREE  	|     	|           	|
+| Employee |      	1 | emp_idx  |        	2 | Emp_Position | A     	|       	7 | 	NULL | NULL   | YES  | BTREE  	|     	|           	|
+| Employee |      	1 | EMPindx  |        	1 | Emp_Position | A     	|       	7 | 	NULL | NULL   | YES  | BTREE  	|     	|           	|
++----------+------------+----------+--------------+--------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
+6 rows in set (0.002 sec)
+
+
+
+
+
+
+
+
