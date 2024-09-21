@@ -1,0 +1,80 @@
+﻿Assignment 4
+
+CREATE TABLE Borrower (
+    Roll INT,
+    Name VARCHAR(100),
+    DateofIssue DATE,
+    NameofBook VARCHAR(100),
+    Status CHAR(1) -- 'I' for Issued, 'R' for Returned
+);
+
+CREATE TABLE Fine (
+    Roll INT,
+    Date DATE,
+    Amt DECIMAL(10,2)
+);
+
+
+
+
+DELIMITER //
+
+CREATE PROCEDURE CalculateFine(IN p_roll INT, IN p_book VARCHAR(100))
+BEGIN
+    DECLARE v_date_of_issue DATE;
+    DECLARE v_days_difference INT;
+    DECLARE v_fine_per_day INT DEFAULT 0;
+    DECLARE v_total_fine DECIMAL(10,2) DEFAULT 0;
+    DECLARE v_status CHAR(1);
+    DECLARE EXIT HANDLER FOR NOT FOUND
+        BEGIN
+            SELECT 'No such record found in the Borrower table.';
+        END;
+
+    -- Fetch DateofIssue and Status from Borrower table
+    SELECT DateofIssue, Status INTO v_date_of_issue, v_status
+    FROM Borrower
+    WHERE Roll = p_roll AND NameofBook = p_book;
+
+    -- Calculate the number of days since the book was issued
+    SET v_days_difference = DATEDIFF(CURDATE(), v_date_of_issue);
+
+    -- Determine the fine based on the number of days
+    IF v_days_difference BETWEEN 15 AND 30 THEN
+        SET v_fine_per_day = 5;
+        SET v_total_fine = v_days_difference * v_fine_per_day;
+    ELSEIF v_days_difference > 30 THEN
+        SET v_fine_per_day = 50;
+        SET v_total_fine = v_days_difference * v_fine_per_day;
+    ELSE
+        SET v_total_fine = 0;
+    END IF;
+
+    -- Update the status to 'R' (Returned) if the book is returned
+    IF v_status = 'I' THEN
+        UPDATE Borrower
+        SET Status = 'R'
+        WHERE Roll = p_roll AND NameofBook = p_book;
+    END IF;
+
+    -- If there is a fine, insert the details into the Fine table
+    IF v_total_fine > 0 THEN
+        INSERT INTO Fine (Roll, Date, Amt)
+        VALUES (p_roll, CURDATE(), v_total_fine);
+    END IF;
+    
+END;
+//
+
+DELIMITER ;
+
+
+-- Insert sample borrowers
+INSERT INTO Borrower (Roll, Name, DateofIssue, NameofBook, Status)
+VALUES
+(101, 'John Doe', '2024-08-01', 'Database Systems', 'I'),
+(102, 'Jane Smith', '2024-08-10', 'Data Science', 'I'),
+(103, 'Mike Lee', '2024-09-01', 'Cybersecurity Basics', 'I');
+
+
+CALL CalculateFine(101, 'Database Systems');
