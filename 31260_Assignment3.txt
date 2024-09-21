@@ -1,0 +1,242 @@
+
+Query 1: Find Employee details and Department details using NATURAL JOIN.
+MariaDB [te31260_db]> select *
+	-> from Employee
+	-> natural join Dept;
++---------+--------+-----------+-----------+--------------+------------+--------------+-----------+---------------+
+| Dept_id | Emp_id | Emp_fname | Emp_lname | Emp_Position | Emp_salary | Emp_JoinDate | Dept_name | Dept_location |
++---------+--------+-----------+-----------+--------------+------------+--------------+-----------+---------------+
+|	1011 |	101 | Gayatri   | Pillai	| GM       	|  	10000 |     	2000 | Computer  | Pune      	|
+|	1011 |	102 | Hans  	| Mittal	| VP       	| 	110000 |     	1980 | Computer  | Pune      	|
+|	1011 |	107 | Sharon	| Grace 	| Analyst  	|  	10000 |     	2000 | Computer  | Pune      	|
+|	1011 |	108 | Soumya	| Aachari   | Engineer 	|   	1000 |     	2004 | Computer  | Pune      	|
+|	1012 |	103 | Parth 	| Joshi 	| VP       	| 	100000 |     	2003 | IT    	| Hyderabad 	|
+|	1012 |	104 | Muskaan   | Vohra 	| Analyst  	|  	10000 |     	2002 | IT    	| Hyderabad 	|
+|	1012 |	109 | Vandana   | Gupta 	| Engineer 	|   	1000 |     	2000 | IT    	| Hyderabad 	|
+|	1013 |	105 | Keshini   | Jain  	| GM       	|  	10000 |     	1986 | ECE   	| Banglore  	|
+|	1013 |	106 | Prajwal   | Padole	| GM       	|  	11000 |     	1980 | ECE   	| Banglore  	|
+|	1013 |	110 | Shreeya   | Kalbhor   | Engineer 	|   	1000 |     	2005 | ECE   	| Banglore  	|
++---------+--------+-----------+-----------+--------------+------------+--------------+-----------+---------------+
+10 rows in set (0.001 sec)
+
+Query 2: Find the emp_fname,Emp_position,location,Emp_JoinDate who have the same Dept id.
+MariaDB [te31260_db]> select e.Emp_fname, e.Emp_position, d.Dept_location, e.Emp_JoinDate from Employee e left join Dept d on e.Dept_id = d.Dept_id;
++-----------+--------------+---------------+--------------+
+| Emp_fname | Emp_position | Dept_location | Emp_JoinDate |
++-----------+--------------+---------------+--------------+
+| Gayatri   | GM           | Pune          | 2000         |
+| Hans      | VP           | Pune          | 1980         |
+| Sharon    | Analyst      | Pune          | 2000         |
+| Soumya    | Engineer     | Pune          | 2004         |
+| Parth     | VP           | Hyderabad     | 2003         |
+| Muskaan   | Analyst      | Hyderabad     | 2002         |
+| Vandana   | Engineer     | Hyderabad     | 2000         |
+| Keshini   | GM           | Banglore      | 1986         |
+| Prajwal   | GM           | Banglore      | 1980         |
+| Shreeya   | Engineer     | Banglore      | 2005         |
+| Raj       | Analyst      | NULL          | 2010         | 
++-----------+--------------+---------------+--------------+
+
+10 rows in set (0.001 sec)
+
+Query 3: Find the Employee details ,Proj_id,Project cost who does not have Project
+location as 'Hyderabad'.
+MariaDB [te31260_db]> Select e.Emp_fname, e.Emp_lname, p.Proj_id, p.Proj_cost
+	-> from Employee e
+	-> join Dept d on e.Dept_id = d.Dept_id
+	-> join Project p on d.Dept_id = p.Dept_id
+	-> where p.Proj_location <> 'Hyderabad';
++-----------+-----------+---------+-----------+
+| Emp_fname | Emp_lname | Proj_id | Proj_cost |
++-----------+-----------+---------+-----------+
+| Gayatri   | Pillai	|   	1 |	200000 |
+| Hans  	| Mittal	|   	1 |	200000 |
+| Sharon	| Grace 	|   	1 |	200000 |
+| Soumya	| Aachari   |   	1 |	200000 |
+|  Keshini   | Jain  	|   	4 |	500000 |
+| Prajwal   | Padole	|   	4 |	500000 |
+| Shreeya   | Kalbhor   |   	4 |	500000 |
++-----------+-----------+---------+-----------+
+18 rows in set (0.001 sec)
+
+Query 4: Find Department Name ,employee name, Emp_position for which project year
+is 2020.
+MariaDB [te31260_db]> select d.Dept_name, e.Emp_fname, e.Emp_lname, e.Emp_position
+	-> from Employee e
+	-> inner join Dept d on e.Dept_id = d.Dept_id
+	-> inner join Project p on d.Dept_id = p.Dept_id
+	-> where p.Proj_year = 2020;
++-----------+-----------+-----------+--------------+
+| Dept_name | Emp_fname | Emp_lname | Emp_position |
++-----------+-----------+-----------+--------------+
+| Computer  | Gayatri   | Pillai	| GM       	|
+| Computer  | Hans  	| Mittal	| VP       	|
+| Computer  | Sharon	| Grace 	| Analyst  	|
+| Computer  | Soumya	| Aachari   | Engineer 	|
+| ECE   	| Keshini   | Jain  	| GM       	|
+| ECE   	| Prajwal   | Padole	| GM       	|
+| ECE   	| Shreeya   | Kalbhor   | Engineer 	|
++-----------+-----------+-----------+--------------+
+7 rows in set (0.032 sec)
+
+Query 5: Display emp_position,D_name who have Project cost >30000.
+MariaDB [te31260_db]> select distinct e.Emp_fname, e.Emp_position, d.Dept_name  from Employee e join Dept d on e.Dept_id = d.Dept_id join Project p on d.Dept_id = p.Dept_id where p.Proj_cost > 30000;
++-----------+--------------+-----------+
+| Emp_fname | Emp_position | Dept_name |
++-----------+--------------+-----------+
+| Gayatri   | GM       	| Computer  |
+| Hans  	| VP       	| Computer  |
+| Sharon	| Analyst  	| Computer  |
+| Soumya	| Engineer 	| Computer  |
+| Keshini   | GM       	| ECE   	|
+| Prajwal   | GM       	| ECE   	|
+| Shreeya   | Engineer 	| ECE   	|
+| Parth 	| VP       	| IT    	|
+| Muskaan   | Analyst  	| IT    	|
+| Vandana   | Engineer 	| IT    	|
++-----------+--------------+-----------+
+10 rows in set (0.002 sec)
+
+Query 6: Find the names of all the Projects that started in the year 2015.
+MariaDB [te31260_db]> select p.Proj_name from Project p where p.Proj_year = 2015;
++-------------------+
+| Proj_name     	|
++-------------------+
+| ML            	|
+| Deep Learning 	|
+| Anomaly Detection |
++-------------------+
+3 rows in set (0.001 sec)
+
+Query 7: List the dept_name having no_of_emp=4
+select d.Dept_name from Dept d right join Employee e on d.Dept_id = e.Dept_id group by d.Dept_name having count(e.Emp_id) = 4;
++-----------+
+| Dept_name |
++-----------+
+| Computer  |
++-----------+
+
+
+
+Query 8: Display the total number of employee who have joined any project before 2009.
+MariaDB [te31260_db]> select count(e.Emp_id) from Employee e
+	-> join Project p on e.Dept_id = p.Dept_id
+	-> where p.Proj_year < 2009;
++-----------------+
+| count(e.Emp_id) |
++-----------------+
+|           	7 |
++-----------------+
+1 row in set (0.001 sec)
+
+Query 9: Create a view showing the employee and Department details.
+MariaDB [te31260_db]> create or replace view Emp_view as select * from Employee natural join Dept;
+Query OK, 0 rows affected (0.025 sec)
+
+MariaDB [te31260_db]> select * from Emp_view;
++---------+--------+-----------+-----------+--------------+------------+--------------+-----------+---------------+
+| Dept_id | Emp_id | Emp_fname | Emp_lname | Emp_Position | Emp_salary | Emp_JoinDate | Dept_name | Dept_location |
++---------+--------+-----------+-----------+--------------+------------+--------------+-----------+---------------+
+|	1011 |	101 | Gayatri   | Pillai	| GM       	|  	10000 |     	2000 | Computer  | Pune      	|
+|	1011 |	102 | Hans  	| Mittal	| VP       	| 	110000 |     	1980 | Computer  | Pune      	|
+|	1011 |	107 | Sharon	| Grace 	| Analyst  	|  	10000 |     	2000 | Computer  | Pune      	|
+|	1011 |	108 | Soumya	| Aachari   | Engineer 	|   	1000 |     	2004 | Computer  | Pune      	|
+|	1012 |	103 | Parth 	| Joshi 	| VP       	| 	100000 |     	2003 | IT    	| Hyderabad 	|
+|	1012 |	104 | Muskaan   | Vohra 	| Analyst  	|  	10000 |     	2002 | IT    	| Hyderabad 	|
+|	1012 |	109 | Vandana   | Gupta 	| Engineer 	|   	1000 |     	2000 | IT    	| Hyderabad 	|
+|	1013 |	105 | Keshini   | Jain  	| GM       	|  	10000 |     	1986 | ECE   	| Banglore  	|
+|	1013 |	106 | Prajwal   | Padole	| GM       	|  	11000 |     	1980 | ECE   	| Banglore  	|
+|	1013 |	110 | Shreeya   | Kalbhor   | Engineer 	|   	1000 |     	2005 | ECE   	| Banglore  	|
++---------+--------+-----------+-----------+--------------+------------+--------------+-----------+---------------+
+10 rows in set (0.002 sec)
+
+Query 10: Perform Manipulation on simple view-Insert, update, delete, drop view.
+MariaDB [te31260_db]> create view EmployeeView as select Emp_id, Emp_fname, Emp_lname, Emp_position from Employee;
+Query OK, 0 rows affected (0.037 sec)
+
+MariaDB [te31260_db]> select * from EmployeeView;
++--------+-----------+-----------+--------------+
+| Emp_id | Emp_fname | Emp_lname | Emp_position |
++--------+-----------+-----------+--------------+
+|	101 | Gayatri   | Pillai	| GM       	|
+|	102 | Hans  	| Mittal	| VP       	|
+|	103 | Parth 	| Joshi 	| VP       	|
+|	104 | Muskaan   | Vohra 	| Analyst  	|
+|	105 | Keshini   | Jain  	| GM       	|
+|	106 | Prajwal   | Padole	| GM       	|
+|	107 | Sharon	| Grace 	| Analyst  	|
+|	108 | Soumya	| Aachari   | Engineer 	|
+|	109 | Vandana   | Gupta 	| Engineer 	|
+|	110 | Shreeya   | Kalbhor   | Engineer 	|
++--------+-----------+-----------+--------------+
+10 rows in set (0.001 sec)
+
+MariaDB [te31260_db]> insert into EmployeeView values(111,'Gargi','Rane','Analyst');
+Query OK, 1 row affected (0.029 sec)
+
+MariaDB [te31260_db]> select * from EmployeeView;
++--------+-----------+-----------+--------------+
+| Emp_id | Emp_fname | Emp_lname | Emp_position |
++--------+-----------+-----------+--------------+
+|	101 | Gayatri   | Pillai	| GM       	|
+|	102 | Hans  	| Mittal	| VP       	|
+|	103 | Parth 	| Joshi 	| VP       	|
+|	104 | Muskaan   | Vohra 	| Analyst  	|
+|	105 | Keshini   | Jain  	| GM       	|
+|	106 | Prajwal   | Padole	| GM       	|
+|	107 | Sharon	| Grace 	| Analyst  	|
+|	108 | Soumya	| Aachari   | Engineer 	|
+|	109 | Vandana   | Gupta 	| Engineer 	|
+|	110 | Shreeya   | Kalbhor   | Engineer 	|
+|	111 | Gargi 	| Rane  	| Analyst  	|
++--------+-----------+-----------+--------------+
+11 rows in set (0.001 sec)
+
+MariaDB [te31260_db]> update EmployeeView set Emp_position = 'GM' where Emp_id = 107;
+Query OK, 1 row affected (0.029 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+MariaDB [te31260_db]> select * from EmployeeView;
++--------+-----------+-----------+--------------+
+| Emp_id | Emp_fname | Emp_lname | Emp_position |
++--------+-----------+-----------+--------------+
+|	101 | Gayatri   | Pillai	| GM       	|
+|	102 | Hans  	| Mittal	| VP       	|
+|	103 | Parth 	| Joshi 	| VP       	|
+|	104 | Muskaan   | Vohra 	| Analyst  	|
+|	105 | Keshini   | Jain  	| GM       	|
+|	106 | Prajwal   | Padole	| GM       	|
+|	107 | Sharon	| Grace 	| GM       	|
+|	108 | Soumya	| Aachari   | Engineer 	|
+|	109 | Vandana   | Gupta 	| Engineer 	|
+|	110 | Shreeya   | Kalbhor   | Engineer 	|
+|	111 | Gargi 	| Rane  	| Analyst  	|
++--------+-----------+-----------+--------------+
+11 rows in set (0.001 sec)
+
+MariaDB [te31260_db]> delete from EmployeeView where Emp_id = 106;
+Query OK, 1 row affected (0.058 sec)
+
+MariaDB [te31260_db]> select * from EmployeeView;
++--------+-----------+-----------+--------------+
+| Emp_id | Emp_fname | Emp_lname | Emp_position |
++--------+-----------+-----------+--------------+
+|	101 | Gayatri   | Pillai	| GM       	|
+|	102 | Hans  	| Mittal	| VP       	|
+|	103 | Parth 	| Joshi 	| VP       	|
+|	104 | Muskaan   | Vohra 	| Analyst  	|
+|	105 | Keshini   | Jain  	| GM       	|
+|	107 | Sharon	| Grace 	| GM       	|
+|	108 | Soumya	| Aachari   | Engineer 	|
+|	109 | Vandana   | Gupta 	| Engineer 	|
+|	110 | Shreeya   | Kalbhor   | Engineer 	|
+|	111 | Gargi 	| Rane  	| Analyst  	|
++--------+-----------+-----------+--------------+
+10 rows in set (0.001 sec)
+
+
+MariaDB [te31260_db]> drop view EmployeeView;
+Query OK, 0 rows affected (0.001 sec)
+
+
+

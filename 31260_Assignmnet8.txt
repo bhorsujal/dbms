@@ -1,0 +1,102 @@
+import java.sql.*;
+import java.util.Scanner;
+
+public class CustomerDatabaseNavigation {
+    public static void main(String[] args) {
+        try {
+           
+            Class.forName("com.mysql.cj.jdbc.Driver"); 
+            Connection con = DriverManager.getConnection(
+                    "jdbc:mysql://localhost:3306/te31265", "te31265", "te31265");
+
+            Statement stmt = con.createStatement();
+            Scanner scanner = new Scanner(System.in);
+
+            while (true) {
+                System.out.println("\nSelect Operation:");
+                System.out.println("1. Add Customer");
+                System.out.println("2. View Customers");
+                System.out.println("3. Edit Customer");
+                System.out.println("4. Delete Customer");
+                System.out.println("5. Exit");
+
+                int choice = scanner.nextInt();
+                scanner.nextLine(); 
+
+                switch (choice) {
+                    case 1:
+                        System.out.print("Enter Customer Name: ");
+                        String name = scanner.nextLine();
+                        System.out.print("Enter Email: ");
+                        String email = scanner.nextLine();
+                        System.out.print("Enter Mobile Number: ");
+                        String mobileNo = scanner.nextLine();
+                        System.out.print("Enter Address: ");
+                        String address = scanner.nextLine();
+
+                        String addQuery = "INSERT INTO Customer (Name, Email, Mobile_no, Address) " +
+                                "VALUES ('" + name + "', '" + email + "', '" + mobileNo + "', '" + address + "')";
+                        stmt.executeUpdate(addQuery);
+                        System.out.println("Customer added successfully!");
+                        break;
+
+                    case 2:
+                        ResultSet rs = stmt.executeQuery("SELECT * FROM Customer");
+                        System.out.println("Customer List:");
+                        while (rs.next()) {
+                            System.out.println("Customer ID: " + rs.getInt("Customer_id"));
+                            System.out.println("Name: " + rs.getString("Name"));
+                            System.out.println("Email: " + rs.getString("Email"));
+                            System.out.println("Mobile No: " + rs.getString("Mobile_no"));
+                            System.out.println("Address: " + rs.getString("Address"));
+                            System.out.println("---------------");
+                        }
+                        break;
+
+                    case 3:
+                        System.out.print("Enter Customer ID to edit: ");
+                        int customerId = scanner.nextInt();
+                        scanner.nextLine(); 
+                        System.out.print("Enter new Name: ");
+                        name = scanner.nextLine();
+                        System.out.print("Enter new Email: ");
+                        email = scanner.nextLine();
+                        System.out.print("Enter new Mobile Number: ");
+                        mobileNo = scanner.nextLine();
+                        System.out.print("Enter new Address: ");
+                        address = scanner.nextLine();
+
+                        String editQuery = "UPDATE Customer SET Name='" + name + "', Email='" + email + "', Mobile_no='" +
+                                mobileNo + "', Address='" + address + "' WHERE Customer_id=" + customerId;
+                        stmt.executeUpdate(editQuery);
+                        System.out.println("Customer updated successfully!");
+                        break;
+
+                    case 4:
+                       System.out.print("Enter Customer ID to delete: ");
+                        customerId = scanner.nextInt();
+                        scanner.nextLine(); 
+
+                        String deleteQuery = "DELETE FROM Customer WHERE Customer_id=" + customerId;
+                        stmt.executeUpdate(deleteQuery);
+                        System.out.println("Customer deleted successfully!");
+                        break;
+
+                    case 5:
+                        System.out.println("Exiting...");
+                        con.close();
+                        return;
+
+                    default:
+                        System.out.println("Invalid option, please try again.");
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+
+

@@ -1,0 +1,85 @@
+CREATE TABLE Cust_Old (
+    customer_id   INT PRIMARY KEY,
+    customer_name VARCHAR(100)
+);
+
+-- Create Cust_New Table
+CREATE TABLE Cust_New (
+    customer_id   INT PRIMARY KEY,
+    customer_name VARCHAR(100)
+);
+
+INSERT INTO Cust_Old (customer_id, customer_name) VALUES (1, 'Gauri');
+INSERT INTO Cust_Old (customer_id, customer_name) VALUES (2, 'Sakshi');
+
+INSERT INTO Cust_New (customer_id, customer_name) VALUES (2, 'Sakshi');
+INSERT INTO Cust_New (customer_id, customer_name) VALUES (3, 'Hans');
+INSERT INTO Cust_New (customer_id, customer_name) VALUES (4, 'Disha');
+
+SELECT * FROM Cust_New;
++-------------+---------------+
+| customer_id | customer_name |
++-------------+---------------+
+|       	2 | Sakshi    	|
+|       	3 | Hans      	|
+|       	4 | Disha     	|
++-------------+---------------+
+3 rows in set (0.001 sec)
+
+SELECT * FROM Cust_Old;
++-------------+---------------+
+| customer_id | customer_name |
++-------------+---------------+
+|       	1 | Gauri     	|
+|       	2 | Sakshi    	|
++-------------+---------------+
+2 rows in set (0.001 sec)
+
+COMMIT;
+
+DELIMITER //
+
+CREATE PROCEDURE MergeCustData()
+BEGIN
+    -- Declare variables for cursor
+    DECLARE done INT DEFAULT FALSE;
+    DECLARE v_customer_id INT;
+    DECLARE v_customer_name VARCHAR(100);
+    DECLARE cur CURSOR FOR
+        SELECT customer_id, customer_name FROM Cust_New;
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+
+    -- Open cursor
+    OPEN cur;
+
+    -- Loop through records
+    read_loop: LOOP
+        FETCH cur INTO v_customer_id, v_customer_name;
+        IF done THEN
+            LEAVE read_loop;
+        END IF;
+
+        -- Check if record exists in Cust_Old
+        IF NOT EXISTS (SELECT 1 FROM Cust_Old WHERE customer_id = v_customer_id) THEN
+            -- Insert new record
+            INSERT INTO Cust_Old (customer_id, customer_name)
+            VALUES (v_customer_id, v_customer_name);
+        END IF;
+    END LOOP;
+    CLOSE cur;
+
+    COMMIT;
+END //
+
+DELIMITER ;
+
+CALL MergeCustData();
++-------------+---------------+
+| customer_id | customer_name |
++-------------+---------------+
+|       	1 | Gauri     	|
+|       	2 | Sakshi    	|
+|       	3 | Hans      	|
+|       	4 | Disha     	|
++-------------+---------------+
+

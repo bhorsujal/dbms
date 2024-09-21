@@ -1,0 +1,112 @@
+CREATE TABLE Library(
+stu_roll_no INT PRIMARY KEY,
+stu_name VARCHAR(20),
+book_name VARCHAR(20),
+date_of_issue DATE,
+price INT
+);
+Query OK, 0 rows affected (0.172 sec)
+
+MariaDB [te31260_db]>CREATE TABLE Library_Audit(
+Action_Performed VARCHAR(20),
+DateAndTime DATETIME,
+stu_roll_no INT REFERENCES Library(stu_roll_no),
+stu_name VARCHAR(20),
+book_name VARCHAR(20),
+date_of_issue DATE,
+price INT);
+Query OK, 0 rows affected (0.172 sec)
+
+MariaDB [te31260_db]>INSERT INTO Library VALUES
+(1, 'Sakshi', 'DBMS', '2024-07-21', 300),
+(2, 'Prajwal', 'CNS', '2024-05-21', 500),
+(3, 'Gayatri', 'SPOS', '2024-07-10', 400),
+(4, 'Pranav', 'OOP', '2024-08-16', 250),
+(5, 'Raghav', 'DSA', '2024-06-26', 650),
+(6, 'Rutuja', 'OOP', '2024-01-01', 330),
+(7, 'Dhanvantari', 'SPOS', '2024-02-18', 540),
+(8, 'Pornima', 'CNS', '2024-01-31', 540),
+(9, 'Parth', 'DBMS', '2024-04-04', 820),
+(10, 'Mahi', 'PPL', '2024-03-07', 430);
+Query OK, 10 rows affected (0.048 sec)
+Records: 10 Duplicates: 0 Warnings: 0
+
+MariaDB [te31260_db]>DELIMITER $$
+CREATE TRIGGER trig_library_insert
+AFTER INSERT ON Library
+FOR EACH ROW
+
+BEGIN
+INSERT INTO Library_Audit
+VALUES ("INSERT", NOW(), NEW.stu_roll_no, NEW.stu_name, NEW.book_name,
+NEW.date_of_issue, NEW.price);
+END $$
+MariaDB [te31260_db]>DELIMITER $$
+CREATE TRIGGER trig_library_update
+AFTER UPDATE ON Library
+FOR EACH ROW
+BEGIN
+INSERT INTO Library_Audit
+VALUES ("UPDATE", NOW(), OLD.stu_roll_no, OLD.stu_name, OLD.book_name,
+OLD.date_of_issue, OLD.price);
+END $$
+Query OK, 0 rows affected (0.080 sec)
+
+MariaDB [te31260_db]>DELIMITER ;
+MariaDB [te31260_db]>DELIMITER $$
+CREATE TRIGGER trig_library_delete
+BEFORE DELETE ON Library
+FOR EACH ROW
+BEGIN
+INSERT INTO Library_Audit
+VALUES ("DELETE", NOW(), OLD.stu_roll_no, OLD.stu_name, OLD.book_name,
+OLD.date_of_issue, OLD.price);
+END $$
+Query OK, 0 rows affected (0.066 sec)
+
+MariaDB [te31260_db]>DELIMITER ;
+-- Select all records from Library table
+MariaDB [te31260_db]> select * from Library;
++-------------+-------------+-----------+---------------+-------+
+| stu_roll_no | stu_name | book_name | date_of_issue | price |
++-------------+-------------+-----------+---------------+-------+
+| 1 | Sakshi | DBMS | 2024-07-21 | 300 |
+| 2 | Prajwal | CNS | 2024-05-21 | 500 |
+| 3 | Gayatri | SPOS | 2024-07-10 | 400 |
+| 4 | Pranav | OOP | 2024-08-16 | 250 |
+
+| 5 | Raghav | DSA | 2024-06-26 | 650 |
+| 6 | Rutuja | OOP | 2024-01-01 | 330 |
+| 7 | Dhanvantari | SPOS | 2024-02-18 | 540 |
+| 8 | Pornima | CNS | 2024-01-31 | 540 |
+| 9 | Parth | DBMS | 2024-04-04 | 820 |
+| 10 | Mahi | PPL | 2024-03-07 | 430 |
++-------------+-------------+-----------+---------------+-------+
+10 rows in set (0.002 sec)
+
+
+
+Update Operation:
+MariaDB [te31260_db]> update Library set stu_name = "Sweety" where stu_name="Pornima";
+Query OK, 1 row affected (0.044 sec)
+Rows matched: 1 Changed: 1 Warnings: 0
+
+Deletion: 
+MariaDB [te31260_db]>DELETE FROM Library WHERE stu_name = 'Raghav';
+Query OK, 1 row affected (0.035 sec)
+
+Insertion:
+MariaDB [te31260_db]>INSERT INTO Library VALUES(20, 'Riya', 'PPS', '2024-08-26', 700);
+Query OK, 1 row affected (0.029 sec)
+
+MariaDB [te31260_db]> select * from Library_Audit;
++------------------+---------------------+-------------+----------+-----------+---------------+-------+
+| Action_Performed | DateAndTime | stu_roll_no | stu_name | book_name |
+date_of_issue | price |
++------------------+---------------------+-------------+----------+-----------+---------------+-------+
+| UPDATE | 2024-09-11 12:28:34 | 8 | Pornima | CNS | 2024-01-31 | 540 |
+| DELETE | 2024-09-11 12:29:09 | 5 | Raghav | DSA | 2024-06-26 | 650 |
+| INSERT | 2024-09-11 12:29:47 | 20 | Riya | PPS | 2024-08-26 | 700
+|
++------------------+---------------------+-------------+----------+-----------+---------------+-------+
+3 rows in set (0.001 sec)

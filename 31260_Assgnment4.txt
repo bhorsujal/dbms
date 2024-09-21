@@ -1,0 +1,121 @@
+MariaDB [te31260_db]> create table Borrower(roll_no integer, name varchar(20), issue_date date, book_name varchar(20), status varchar(10), primary key(roll_no));
+Query OK, 0 rows affected (0.260 sec)
+
+MariaDB [te31260_db]> create table Fine(roll_no integer, fine_date date, amt integer, foreign key(roll_no) references Borrower(roll_no));
+Query OK, 0 rows affected (0.178 sec)
+
+MariaDB [te31260_db]> select * from Borrower;
++---------+---------+------------+------------+--------+
+| roll_no | name	| issue_date | book_name  | status |
++---------+---------+------------+------------+--------+
+|  	10 | Gayatri | 2023-10-02 | Analytics  | Issued |
+|  	11 | Sakshi  | 2024-11-01 | OS     	| Issued |
+|  	12 | Prajwal | 2024-01-10 | Javascript | Issued |
+|  	13 | Hans	| 2023-02-10 | DSA    	| Issued |
+|  	14 | Anjali  | 2024-02-10 | DSA & OOP  | Issued |
+|  	15 | Parth   | 2024-03-10 | AIML   	| Issued |
++---------+---------+------------+------------+--------+
+6 rows in set (0.001 sec)
+
+MariaDB [te31260_db]> delimiter $$
+
+create procedure calc_fine(
+	in p_roll_no integer,
+	in p_book_name varchar(20)
+)
+begin
+	declare x integer;
+       declare fine_amount decimal(10, 2);
+	declare current_status varchar(20);
+
+	declare continue handler for not found
+       begin
+    	select 'Not Found' as ErrorMessage;
+	end;
+    
+	declare exit handler for sql state '23000'
+	begin
+    	select 'Invalid Input' as ErrorMessage;
+	end;
+
+	select DATEDIFF(CURDATE(), issue_date) into x
+	from Borrower
+	where roll_no = p_roll_no and book_name = p_book_name;
+
+	if x is not null then	
+    	if x > 15 and x <= 30 then
+        	set fine_amount = (x - 15) * 5;
+    	elseif x > 30 then
+        	set fine_amount = (x - 30) * 50;
+    	else
+        	set fine_amount = 0; 
+ 	endif;
+
+        	if fine_amount > 0 then
+           	If not exists(
+           	select 1 from Fine
+           	where roll_no = p_roll_no and fine_date = CURDATE()
+        	) then
+            Insert into Fine(roll_no, fine_date, amt)
+           	values(p_roll_no, CURDATE(), fine_amount);
+        	endif;
+    	endif;
+   	
+    	update Borrower
+    	set status = 'Returned'
+    	where roll_no = p_roll_no and book_name = p_book_name;
+	else
+    	select 'Book not found for the given roll number' as ErrorMessage;
+	endif;
+end$$
+
+delimiter ;
+
+MariaDB [te31260_db]> select * from Fine;
++---------+------------+-------+
+| roll_no | fine_date  | amt   |
++---------+------------+-------+
+|  	10 | 2024-08-14 | 14350 |
++---------+------------+-------+
+1 row in set (0.001 sec)
+
+MariaDB [te31260_db]> select * from Borrower;
++---------+---------+------------+------------+----------+
+| roll_no | name	| issue_date | book_name  | status   |
++---------+---------+------------+------------+----------+
+|  	10 | Gayatri | 2023-10-02 | Analytics  | Returned |
+|  	11 | Sakshi  | 2024-11-01 | OS     	| Issued   |
+|  	12 | Prajwal | 2024-01-10 | Javascript | Issued   |
+|  	13 | Hans	| 2023-02-10 | DSA    	| Issued   |
+|  	14 | Anjali  | 2024-02-10 | DSA & OOP  | Issued   |
+|  	15 | Parth   | 2024-03-10 | AIML   	| Issued   |
++---------+---------+------------+------------+----------+
+6 rows in set (0.001 sec)
+
+Area of Circle: 
+DELIMITER $$
+FOR i IN 5..9
+DO
+SET @a:=3.14*i*i;
+INSERT INTO circle(radius,area)values(i,@
+a);
+END FOR;
+$$
+
+
+DELIMITER $$
+CREATE PROCEDURE calc_area()
+BEGIN
+	DECLARE ar FLOAT;
+	DECLARE i INT DEFAULT 1;
+	WHILE i<10 DO		
+		SET ar=3.14*i*i;
+		INSERT INTO circle values(i,ar);
+		SET i=i+1;
+	END WHILE;
+	SELECT *FROM circle;
+END;
+$$
+
+
+
